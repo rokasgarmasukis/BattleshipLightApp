@@ -51,7 +51,7 @@ namespace BattleshipLight
         {
             do
             {
-                Console.WriteLine($"Where do you want to place your ship number { model.ShipLocations.Count + 1 } ");
+                Console.Write($"Where do you want to place your ship number { model.ShipLocations.Count + 1 }: ");
                 string location = Console.ReadLine();
 
                 bool isValidInput = GameLogic.CheckGridInput(location);
@@ -76,8 +76,9 @@ namespace BattleshipLight
         {
             string currentRow = activePlayer.ShotGrid[0].SpotLetter;
 
+            Console.WriteLine();
             Console.WriteLine("  1 2 3 4 5");
-            Console.Write("A ");
+            Console.Write("A");
 
             foreach (var gridSpot in activePlayer.ShotGrid)
             {
@@ -107,6 +108,7 @@ namespace BattleshipLight
             }
 
             Console.WriteLine();
+            Console.WriteLine();
         }
 
         public static void RecordPlayerShot(PlayerModel activePlayer, PlayerModel opponent)
@@ -117,7 +119,7 @@ namespace BattleshipLight
 
             do
             {
-                string shot = AskForShot();
+                string shot = AskForShot(activePlayer);
                 (row, column) = GameLogic.SplitShotIntoRowAndColumn(shot);
                 isValidShot = GameLogic.ValidateShot(activePlayer, row, column);
 
@@ -133,9 +135,9 @@ namespace BattleshipLight
             GameLogic.MarkShotResult(activePlayer, row, column, isAHit);
         }
 
-        private static string AskForShot()
+        private static string AskForShot(PlayerModel activePlayer)
         {
-            Console.Write("Please enter your shot selection: ");
+            Console.Write($"{activePlayer.UsersName}, please enter your shot selection: ");
             string output = Console.ReadLine();
 
             return output;

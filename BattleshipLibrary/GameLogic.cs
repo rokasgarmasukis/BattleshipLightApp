@@ -180,6 +180,7 @@ namespace BattleshipLibrary
                 if (ship.SpotLetter == row && ship.SpotNumber == column)
                 {
                     isAHit = true;
+                    ship.Status = GridSpotStatus.Sunk;
                 }
             }
 
@@ -195,10 +196,12 @@ namespace BattleshipLibrary
                     if (isAHit)
                     {
                         gridSpot.Status = GridSpotStatus.Hit;
+                        Console.WriteLine("It was a hit!");
                     }
                     else
                     {
                         gridSpot.Status = GridSpotStatus.Miss;
+                        Console.WriteLine("It was a miss!");
                     }
                 }
             }

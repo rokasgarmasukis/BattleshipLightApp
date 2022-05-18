@@ -28,6 +28,7 @@ namespace BattleshipLight
 
             // load up the shot grid
             GameLogic.InitializeGrid(output);
+            DisplayShotGrid(output);
 
             // ask user for their 5 ship placements
             PlaceShips(output);
@@ -53,6 +54,14 @@ namespace BattleshipLight
                 Console.WriteLine($"Where do you want to place your ship number { model.ShipLocations.Count + 1 } ");
                 string location = Console.ReadLine();
 
+                bool isValidInput = GameLogic.CheckGridInput(location);
+
+                if (isValidInput == false)
+                {
+                    Console.WriteLine($"{location} does not exist. Please try again.");
+                    continue;
+                }
+
                 bool isValidLocation = GameLogic.PlaceShip(model, location);
 
                 if (isValidLocation == false)
@@ -61,6 +70,81 @@ namespace BattleshipLight
                 }
 
             } while (model.ShipLocations.Count < 5);
+        }
+
+        public static void DisplayShotGrid(PlayerModel activePlayer)
+        {
+            string currentRow = activePlayer.ShotGrid[0].SpotLetter;
+
+            Console.WriteLine("  1 2 3 4 5");
+            Console.Write("A ");
+
+            foreach (var gridSpot in activePlayer.ShotGrid)
+            {
+                if (gridSpot.SpotLetter != currentRow)
+                {
+                    Console.WriteLine();
+                    currentRow = gridSpot.SpotLetter;
+                    Console.Write(currentRow);
+                }
+
+                if (gridSpot.Status == GridSpotStatus.Empty)
+                {
+                    Console.Write($"  ");
+                }
+                else if (gridSpot.Status == GridSpotStatus.Hit)
+                {
+                    Console.Write(" X");
+                }
+                else if (gridSpot.Status == GridSpotStatus.Miss)
+                {
+                    Console.Write(" O");
+                }
+                else
+                {
+                    Console.Write(" ?");
+                }
+            }
+
+            Console.WriteLine();
+        }
+
+        public static void RecordPlayerShot(PlayerModel activePlayer, PlayerModel opponent)
+        {
+            bool isValidShot = false;
+            string row = "";
+            int column = 0;
+
+            do
+            {
+                string shot = AskForShot();
+                (row, column) = GameLogic.SplitShotIntoRowAndColumn(shot);
+                isValidShot = GameLogic.ValidateShot(activePlayer, row, column);
+
+                if (isValidShot == false)
+                {
+                    Console.WriteLine("Invalid shot location. Please try again.");
+                }
+
+            } while (isValidShot == false);
+
+            bool isAHit = GameLogic.IdentifyShotResult(opponent, row, column);
+
+            GameLogic.MarkShotResult(activePlayer, row, column, isAHit);
+        }
+
+        private static string AskForShot()
+        {
+            Console.Write("Please enter your shot selection: ");
+            string output = Console.ReadLine();
+
+            return output;
+        }
+
+        public static void IdentifyWinner(PlayerModel winner)
+        {
+            Console.WriteLine($"Congratulations to {winner.UsersName} for winning!");
+            Console.WriteLine($"{winner.UsersName} took {GameLogic.GetShotCount(winner)} shots");
         }
     }
 
